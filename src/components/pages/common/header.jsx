@@ -1,4 +1,30 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function Header({ setActiveTab, onLogout }) {
+  const navigate = useNavigate();
+
+  const handleAdminProfile = () => {
+    if (typeof setActiveTab === 'function') {
+      setActiveTab('adminProfile');
+    }
+    navigate('/profile');
+  };
+
+  const handleCompanyProfile = () => {
+    if (typeof setActiveTab === 'function') {
+      setActiveTab('companyProfile');
+    }
+    navigate('/company-profile');
+  };
+
+  const handleLogout = () => {
+    if (typeof onLogout === 'function') {
+      onLogout();
+      return;
+    }
+    navigate('/');
+  };
+
   return (
     <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
       <div>
@@ -19,21 +45,21 @@ export default function Header({ setActiveTab, onLogout }) {
         <div className="absolute right-0 top-12 z-10 mt-2 hidden w-52 rounded-2xl border border-gray-200 bg-white shadow-lg transition duration-150 group-hover:block">
           <button
             type="button"
-            onClick={() => setActiveTab('adminProfile')}
+            onClick={handleAdminProfile}
             className="w-full rounded-t-2xl px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100"
           >
             Admin Profile
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('companyProfile')}
+            onClick={handleCompanyProfile}
             className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100"
           >
             Company Profile
           </button>
           <button
             type="button"
-            onClick={onLogout}
+            onClick={handleLogout}
             className="w-full rounded-b-2xl px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100"
           >
             Logout

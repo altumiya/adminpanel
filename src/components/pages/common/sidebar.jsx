@@ -1,548 +1,638 @@
-import { useState } from 'react'
-import { FaAngleDown, FaAngleRight, FaBoxOpen, FaComments, FaEnvelope, FaGlobeAsia, FaImages, FaLayerGroup, FaPalette, FaQuestionCircle, FaReceipt, FaShoppingBag, FaTachometerAlt, FaUser } from 'react-icons/fa'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { AiFillPieChart } from 'react-icons/ai'
+import { IoMdRadioButtonOn } from "react-icons/io"
+import { FaUser, FaExpandArrowsAlt, FaLocationArrow, FaUserEdit } from "react-icons/fa"
+import { FaMessage, FaDroplet, FaClockRotateLeft, FaFilePen } from "react-icons/fa6"
+import { GiShoppingBag } from "react-icons/gi"
+import { RiArrowDownSLine, RiArrowUpSLine, RiMenu3Fill } from "react-icons/ri"
+import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2"
+import { FcFaq } from "react-icons/fc"
+import { BsFileEarmarkText } from "react-icons/bs"
 
-const menuButtonClass =
-    'flex w-full items-center justify-between rounded-md px-4 py-3 text-sm font-medium transition'
+export default function SideBar({ activeTab, setActiveTab }) {
+  const [open, setOpen] = useState('')
+  const [currentActiveTab, setCurrentActiveTab] = useState('dashboard')
+  const navigate = useNavigate()
+  const goTo = (path) => {
+    navigate(path)
+  }
 
-export default function Sidebar({ activeTab, setActiveTab }) {
-    const [openMenu, setOpenMenu] = useState('')
+  const location = useLocation()
 
-    const isActive = (tab) => activeTab === tab
-    const handleMenuToggle = (menu) => setOpenMenu((current) => (current === menu ? '' : menu))
-  
+  useEffect(() => {
+    const p = location.pathname
 
-    return (
-        <aside className="sticky top-0 flex h-screen flex-col overflow-hidden bg-white shadow-md">
-            <div className="shrink-0 border-b border-gray-200 px-5 py-6">
-                <img
-                    src="https://www.wscubetech.com/images/wscube-tech-logo-2.svg"
-                    alt="WsCube Tech"
-                    className="mx-auto w-44"
-                />
-            </div>
+    if (p.startsWith('/category/subsubcategory')) {
+      setOpen('subsubcat')
+      setCurrentActiveTab(p.includes('/view') ? 'viewSubSubCategory' : 'addSubSubCategory')
+    } else if (p.startsWith('/category/subcategory')) {
+      setOpen('subcat')
+      setCurrentActiveTab(p.includes('/view') ? 'viewSubCategory' : 'addSubCategory')
+    } else if (p.startsWith('/category')) {
+      setOpen('parentcat')
+      setCurrentActiveTab(p.includes('/view') ? 'viewCategory' : 'addCategory')
+    } else if (p.startsWith('/color')) {
+      setOpen('colors')
+      setCurrentActiveTab(p.includes('/view') ? 'viewColor' : 'addColor')
+    } else if (p.startsWith('/enquiry')) {
+      setOpen('enquiry')
+      setCurrentActiveTab(p.includes('/newsletter') ? 'newsletter' : 'contactEnquiry')
+    } else if (p.startsWith('/material')) {
+      setOpen('material')
+      setCurrentActiveTab(p.includes('/view') ? 'viewMaterial' : 'addMaterial')
+    } else if (p.startsWith('/product')) {
+      setOpen('product')
+      setCurrentActiveTab(p.includes('/view') ? 'viewProduct' : 'addProduct')
+    } else if (p.startsWith('/why-choose-us')) {
+      setOpen('whychooseus')
+      setCurrentActiveTab(p.includes('/view') ? 'viewWhyChooseUs' : 'addWhyChooseUs')
+    } else if (p.startsWith('/orders')) {
+      setOpen('orders')
+      setCurrentActiveTab('viewOrder')
+    } else if (p.startsWith('/sliders')) {
+      setOpen('sliders')
+      setCurrentActiveTab(p.includes('/view') ? 'viewSlider' : 'addSlider')
+    } else if (p.startsWith('/country')) {
+      setOpen('country')
+      setCurrentActiveTab(p.includes('/view') ? 'viewCountry' : 'addCountry')
+    } else if (p.startsWith('/testimonial')) {
+      setOpen('testimonial')
+      setCurrentActiveTab(p.includes('/view') ? 'viewTestimonial' : 'addTestimonial')
+    } else if (p.startsWith('/faqs')) {
+      setOpen('faqs')
+      setCurrentActiveTab(p.includes('/view') ? 'viewFAQ' : 'addFAQ')
+    } else if (p.startsWith('/user')) {
+      setOpen('User')
+      setCurrentActiveTab('viewUser')
+    } else if (p.startsWith('/dashboard')) {
+      setOpen('')
+      setCurrentActiveTab('dashboard')
+    } else {
+      setOpen('')
+      setCurrentActiveTab('dashboard')
+    }
+  }, [location.pathname])
 
-            <nav className="flex-1 overflow-y-auto p-4">
-                <ul className="space-y-2">
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setActiveTab('dashboard')
-                                setOpenMenu('')
-                            }}
-                            className={`${menuButtonClass} ${isActive('dashboard') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                                }`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaTachometerAlt />
-                                Dashboard
-                            </span>
-                        </button>
-                    </li>
+  const resolvedActiveTab = typeof activeTab === 'string' ? activeTab : currentActiveTab
+  const isActive = (tab) => resolvedActiveTab === tab
+  const handleMenuToggle = (menu) => setOpen((current) => (current === menu ? '' : menu))
 
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setActiveTab('user')
-                                setOpenMenu('')
-                            }}
-                            className={`${menuButtonClass} ${isActive('user') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                                }`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaUser />
-                                User
-                            </span>
-                        </button>
-                    </li>
+  const activeClass = "bg-blue-50 text-blue-700 dark:bg-gray-700 dark:text-blue-400"
+  const inactiveClass = "text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
 
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('color')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaPalette />
-                                Color
-                            </span>
-                            {openMenu === 'color' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
+  return (
+    <>
+     <aside className="h-screen transition-transform -translate-x-full sm:translate-x-0 w-64">
+        <div className='h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800 scrollbar-hide'>
+          
+          <button 
+            onClick={() => goTo('/dashboard')}
+            className='w-full flex items-center ps-2.5 mb-5 border-b border-slate-400 pb-7 transition cursor-pointer'
+          >
+            <img src="https://www.wscubetech.com/images/wscube-tech-logo-2.svg" alt="logo" />
+          </button>
 
-                        {openMenu === 'color' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addColor')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addColor') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Color
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewColor')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewColor') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Color
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
+          <ul className="space-y-1 font-[14px]">
+            <li className="pb-3">
+              <button
+                onClick={() => goTo('/dashboard')}
+                className={`w-full flex items-center p-2 rounded-lg group transition ${isActive('dashboard') ? activeClass : inactiveClass}`}
+              >
+                <AiFillPieChart />
+                <span className="ms-3 text-[14px] font-medium">Dashboard</span>
+              </button>
+            </li>
 
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('enquiry')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaEnvelope />
-                                Enquiry
-                            </span>
-                            {openMenu === 'enquiry' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'enquiry' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('contactEnquiry')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('contactEnquiry') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Contact Enquiry
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('newsletter')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('newsletter') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Newsletter
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('material')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaBoxOpen />
-                                Material
-                            </span>
-                            {openMenu === 'material' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'material' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addMaterial')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addMaterial') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Material
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewMaterial')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewMaterial') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Material
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('category')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaLayerGroup />
-                                Category
-                            </span>
-                            {openMenu === 'category' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'category' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Category
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Category
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('subcategory')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaLayerGroup />
-                                SubCategory
-                            </span>
-                            {openMenu === 'subcategory' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'subcategory' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addSubCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add subCategory
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewSubCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View SubCategory
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('subsubcategory')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaLayerGroup />
-                                SubSubCategory
-                            </span>
-                            {openMenu === 'subsubcategory' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'subsubcategory' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addSubSubCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add SubSubCategory
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewSubSubCategory')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewCategory') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View SubSubCategory
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-
-
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('product')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaShoppingBag />
-                                Product
-                            </span>
-                            {openMenu === 'product' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'product' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addProduct')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addProduct') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Product
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewProduct')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewProduct') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Product
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('whyChoose')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaQuestionCircle />
-                                Why Choose Us
-                            </span>
-                            {openMenu === 'whyChoose' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'whyChoose' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addWhyChooseUs')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addWhyChooseUs') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewWhyChooseUs')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewWhyChooseUs') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('order')}
-                            className={`${menuButtonClass} ${isActive('order') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                                }`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaReceipt />
-                                Order
-                            </span>
-                        </button>
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('slider')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaImages />
-                                Slider
-                            </span>
-                            {openMenu === 'slider' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'slider' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addSlider')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addSlider') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Slider
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewSlider')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewSlider') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Slider
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('country')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaGlobeAsia />
-                                Country
-                            </span>
-                            {openMenu === 'country' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'country' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addCountry')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addCountry') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Country
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewCountry')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewCountry') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Country
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('testimonial')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaComments />
-                                Testimonial
-                            </span>
-                            {openMenu === 'testimonial' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'testimonial' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addTestimonial')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addTestimonial') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add Testimonial
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewTestimonial')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewTestimonial') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View Testimonial
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            onClick={() => handleMenuToggle('faq')}
-                            className={`${menuButtonClass} text-gray-700 hover:bg-gray-100`}
-                        >
-                            <span className="flex items-center gap-3">
-                                <FaQuestionCircle />
-                                FAQ
-                            </span>
-                            {openMenu === 'faq' ? <FaAngleDown /> : <FaAngleRight />}
-                        </button>
-
-                        {openMenu === 'faq' && (
-                            <ul className="mt-2 space-y-1 border-l border-gray-200 pl-4">
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('addFAQ')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('addFAQ') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Add FAQ
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('viewFAQ')}
-                                        className={`w-full rounded-md px-4 py-2 text-left text-sm transition ${isActive('viewFAQ') ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        View FAQ
-                                    </button>
-                                </li>
-                            </ul>
-                        )}
-                    </li>
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('User')} 
+              >
+                <div className="flex items-center">
+                  <FaUser />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Users</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "User" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "User" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/user')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewUser') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View User</span>
+                    </button>
+                  </li>
                 </ul>
-            </nav>
-        </aside>
-    )
+              )}
+            </li>
+
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('enquiry')} 
+              >
+                <div className="flex items-center">
+                  <FaMessage />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Enquirys</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "enquiry" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "enquiry" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/enquiry/contact')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('contactEnquiry') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Contact Enquiry</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/enquiry/newsletter')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('newsletter') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Newsletter</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Colors */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('colors')} 
+              >
+                <div className="flex items-center">
+                  <FaDroplet />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Colors</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "colors" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "colors" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/color/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addColor') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Color</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/color/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewColor') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Color</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Materials */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('material')} 
+              >
+                <div className="flex items-center">
+                  <FaExpandArrowsAlt />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Materials</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "material" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "material" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/material/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addMaterial') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Material</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/material/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewMaterial') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Material</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Parent Categories */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('parentcat')} 
+              >
+                <div className="flex items-center">
+                  <RiMenu3Fill />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Parent Categorys</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "parentcat" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "parentcat" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Category</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Category</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Sub Categories */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('subcat')} 
+              >
+                <div className="flex items-center">
+                  <RiMenu3Fill />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Sub Categorys</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "subcat" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "subcat" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/subcategory/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addSubCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add SubCategory</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/subcategory/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewSubCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View SubCategory</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Sub Sub Categories */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('subsubcat')} 
+              >
+                <div className="flex items-center">
+                  <RiMenu3Fill />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Sub Sub Categorys</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "subsubcat" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "subsubcat" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/subsubcategory/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addSubSubCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add SubSubCategory</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/category/subsubcategory/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewSubSubCategory') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View SubSubCategory</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Product */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('product')} 
+              >
+                <div className="flex items-center">
+                  <GiShoppingBag />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Product</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "product" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "product" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/product/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addProduct') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Product</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/product/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewProduct') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Product</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Why Choose Us */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('whychooseus')} 
+              >
+                <div className="flex items-center">
+                  <FaClockRotateLeft />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Why Choose Us</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "whychooseus" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "whychooseus" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/why-choose-us/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addWhyChooseUs') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Why Choose Us</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/why-choose-us/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewWhyChooseUs') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Why Choose Us</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Orders */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('orders')} 
+              >
+                <div className="flex items-center">
+                  <FaFilePen />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Orders</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "orders" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "orders" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/orders/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewOrder') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Orders</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Sliders */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('sliders')} 
+              >
+                <div className="flex items-center">
+                  <HiOutlineAdjustmentsHorizontal />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Sliders</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "sliders" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "sliders" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/sliders/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addSlider') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Slider</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/sliders/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewSlider') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Slider</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Country */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('country')} 
+              >
+                <div className="flex items-center">
+                  <FaLocationArrow />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Country</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "country" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "country" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/country/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addCountry') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Country</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/country/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewCountry') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Country</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Testimonials */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('testimonial')} 
+              >
+                <div className="flex items-center">
+                  <FaUserEdit />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">Testimonials</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "testimonial" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "testimonial" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/testimonial/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addTestimonial') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add Testimonial</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/testimonial/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewTestimonial') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View Testimonial</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* FAQs */}
+            <li>
+              <button 
+                className={`w-full flex items-center justify-between p-2 rounded-lg group transition ${inactiveClass}`} 
+                onClick={() => handleMenuToggle('faqs')} 
+              >
+                <div className="flex items-center">
+                  <FcFaq />
+                  <span className="flex-1 ms-3 whitespace-nowrap text-[14px]">FAQs</span>
+                </div>
+                <span className="inline-flex items-center justify-center font-medium">
+                  {open === "faqs" ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </span>
+              </button>
+              {open === "faqs" && (
+                <ul className="mt-1 space-y-1 pl-2">
+                  <li>
+                    <button 
+                      onClick={() => goTo('/faqs/add')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('addFAQ') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">Add FAQ</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => goTo('/faqs/view')}
+                      className={`flex items-center p-2 w-full rounded-lg group transition ${isActive('viewFAQ') ? activeClass : inactiveClass}`}
+                    >
+                      <IoMdRadioButtonOn />
+                      <span className="font-semibold ms-4 text-[13px] whitespace-nowrap">View FAQ</span>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Terms & Condition */}
+            <li className="pt-2 pb-3">
+              <button
+                onClick={() => {
+                  setActiveTab('termsCondition')
+                  setOpen('')
+                }}
+                className={`w-full flex items-center p-2 rounded-lg group transition ${isActive('termsCondition') ? activeClass : inactiveClass}`}
+              >
+                <BsFileEarmarkText />
+                <span className="ms-3 text-[14px] font-medium">Terms & Condition</span>
+              </button>
+            </li>
+
+          </ul>
+        </div>
+      </aside>
+    </>
+  )
 }
