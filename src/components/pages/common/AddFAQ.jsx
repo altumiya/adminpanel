@@ -20,7 +20,7 @@ export default function AddFAQ({ setActiveTab }) {
         if (id) return; 
         const fetchFAQs = async () => {
             try {
-                const res = await axios.get(`${baseUrl}/faqs/view`);
+                const res = await axios.get(`${baseUrl}/faq/view`);
                 const faqs = Array.isArray(res.data) ? res.data : (res.data.data || []);
 
                 if (faqs.length > 0) {
@@ -117,7 +117,7 @@ export default function AddFAQ({ setActiveTab }) {
                     setQuestion('');
                     setAnswer('');
                     setOrder(String(parsedOrder + 1)); 
-                    toast.success('FAQ added successfully!');
+                    toast.success(res.data.message || 'FAQ added successfully!');
                     
                     if (typeof setActiveTab === 'function') {
                         setTimeout(() => setActiveTab('viewFAQ'), 2000); 
@@ -138,6 +138,7 @@ export default function AddFAQ({ setActiveTab }) {
 
     return (
         <div className="max-w-2xl rounded-lg bg-white p-6 shadow-sm">
+            
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
                     {id ? 'Edit FAQ' : 'Add FAQ'}

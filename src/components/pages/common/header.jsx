@@ -1,19 +1,58 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 export default function Header({ setActiveTab, onLogout }) {
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_APIBASEURL || "http://localhost:8000/api/";
+
+  // 1. Setup state to hold the real admin data
+  const [adminData, setAdminData] = useState({
+    name: "Admin",
+    email: "Loading...",
+    logo: null
+  });
+  const [imagePath, setImagePath] = useState("");
+
+  // 2. Fetch the profile data
+  const fetchHeaderProfile = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}adminprofile/view`, {
+        method: "GET",
+        credentials: "include", 
+      });
+      const result = await response.json();
+
+      if (result.status) {
+        setAdminData({
+          name: result.data.name || "Admin",
+          email: result.data.email || "admin@example.com",
+          logo: result.data.logo || null,
+        });
+        setImagePath(result.path || "");
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile for header", error);
+    }
+  };
+
+  // 3. Run fetch on mount AND listen for updates from the Profile page
+  useEffect(() => {
+    fetchHeaderProfile();
+
+    // This listens for our custom signal to refresh instantly
+    window.addEventListener('profileUpdated', fetchHeaderProfile);
+    
+    // Cleanup listener when component unmounts
+    return () => window.removeEventListener('profileUpdated', fetchHeaderProfile);
+  }, []);
 
   const handleAdminProfile = () => {
-    if (typeof setActiveTab === 'function') {
-      setActiveTab('adminProfile');
-    }
+    if (typeof setActiveTab === 'function') setActiveTab('adminProfile');
     navigate('/profile');
   };
 
   const handleCompanyProfile = () => {
-    if (typeof setActiveTab === 'function') {
-      setActiveTab('companyProfile');
-    }
+    if (typeof setActiveTab === 'function') setActiveTab('companyProfile');
     navigate('/company-profile');
   };
 
@@ -33,12 +72,24 @@ export default function Header({ setActiveTab, onLogout }) {
       </div>
       <div className="relative group">
         <div className="flex cursor-pointer items-center gap-3 rounded-full px-3 py-2 hover:bg-gray-100">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
-            A
-          </div>
+          
+          {/* Dynamically show Image or Name Initial */}
+          {adminData.logo ? (
+            <img 
+              src={imagePath + adminData.logo} 
+              alt="Admin" 
+              className="h-10 w-10 rounded-full object-cover border border-gray-200"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+              {adminData.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+
+          {/* Render the actual Name and Email */}
           <div className="hidden min-w-[200px] flex-col gap-1 text-left sm:flex">
-            <p className="text-sm font-medium text-gray-900">Admin</p>
-            <p className="text-xs text-gray-500">admin@example.com</p>
+            <p className="text-sm font-medium text-gray-900">{adminData.name}</p>
+            <p className="text-xs text-gray-500">{adminData.email}</p>
           </div>
         </div>
 
@@ -67,5 +118,5 @@ export default function Header({ setActiveTab, onLogout }) {
         </div>
       </div>
     </header>
-  )
+  );
 }
