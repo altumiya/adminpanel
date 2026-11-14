@@ -85,24 +85,11 @@ export default function AddColor({ setActiveTab }) {
         })}
        else{
           try {
-            let res;
-            const createEndpoints = [`${baseUrl}/color/create`, `${baseUrl}/color/add`, `${baseUrl}/color/store`];
-            let success = false;
-            for (const url of createEndpoints) {
-                try {
-                    res = await axios.post(url, payload);
-                    success = true;
-                    break;
-                } catch (err) {
-                    console.warn(`Failed endpoint: ${url}`);
-                }
-            }
-            if (!success) throw new Error("Could not find a valid create endpoint.");
-
+            const res = await axios.post(`${baseUrl}/color/create`, payload);
             const finalResp = res.data;
 
-            if (finalResp.status || res.status === 200 || res.status === 201) {
-                toast.success('Color added successfully!');
+            if (finalResp.status === true) {
+                toast.success(finalResp.message || 'Color added successfully!');
                 setShowColorPicker(false);
                 setName('');
                 setColor('#2563eb');
@@ -114,7 +101,12 @@ export default function AddColor({ setActiveTab }) {
                 }
             } else {
                 setError(finalResp.error || null);
-                toast.error(finalResp.error?.message || 'Failed to add color.');
+                toast.error(
+                    finalResp.error?.message ||
+                    finalResp.error?.name ||
+                    finalResp.message ||
+                    'Failed to add color.'
+                );
             }
         } catch (err) {
             const message = err?.response?.data?.message || err.message || 'Cannot connect to the server.';
